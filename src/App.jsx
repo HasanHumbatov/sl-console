@@ -9,7 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import AppList from './components/AppList';
 import BaselineApplicationTags from './components/BaselineApplicationTags';
-import IgnoreList from './components/IgnoreList';
+import IgnoreRules from './components/IgnoreRules';
 import BranchBuilds from './components/BranchBuilds';
 import TGAreport from './components/TGAreport';
 import logo from '../src/assets/images/logo.png';
@@ -22,8 +22,8 @@ const App = () => {
     switch (activeComponent) {
       case 'AppList':
         return <AppList />;
-      case 'IgnoreList':
-        return <IgnoreList />;
+      case 'IgnoreRules':
+        return <IgnoreRules />;
       case 'BaselineApplicationTags':
         return <BaselineApplicationTags />;
       case 'BranchBuilds':
@@ -68,9 +68,9 @@ const App = () => {
           Service Branch Builds
         </button>
         <button
-          onClick={() => setActiveComponent('IgnoreList')}
+          onClick={() => setActiveComponent('IgnoreRules')}
           className={`flex items-center text-left py-2 px-4 rounded w-full hover:bg-gray-700 ${
-            activeComponent === 'IgnoreList' ? 'bg-gray-600' : ''
+            activeComponent === 'IgnoreRules' ? 'bg-gray-600' : ''
           }`}
         >
           <XCircleIcon className='h-5 w-5 mr-5' /> {/* Icon */}
