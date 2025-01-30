@@ -46,7 +46,8 @@ AgentTable.propTypes = {
       bsid: PropTypes.string.isRequired,
       buildName: PropTypes.string.isRequired,
       agentId: PropTypes.string.isRequired,
-      started: PropTypes.string.isRequired,
+      started: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+        .isRequired,
       labId: PropTypes.string.isRequired,
     })
   ).isRequired,

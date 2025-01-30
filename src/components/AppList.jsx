@@ -18,7 +18,7 @@ const AppList = () => {
     filteredAgents: [],
     isDropdownOpen: false,
     activeIndex: -1,
-    sortOrder: null,
+    sortOrder: '',
     modalData: null,
     isModalOpen: false,
     isLoading: false,

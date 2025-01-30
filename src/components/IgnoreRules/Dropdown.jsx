@@ -6,8 +6,9 @@ const Dropdown = ({
   searchInputRef,
   handleKeyDown,
   handleAppSelect,
+  dropdownRef,
 }) => (
-  <div className='relative mb-4 w-1/5'>
+  <div ref={dropdownRef} className='relative mb-4 w-1/5'>
     <div className='flex items-center'>
       <button
         onClick={() =>
@@ -119,6 +120,7 @@ Dropdown.propTypes = {
   searchInputRef: PropTypes.object.isRequired,
   handleKeyDown: PropTypes.func.isRequired,
   handleAppSelect: PropTypes.func.isRequired,
+  dropdownRef: PropTypes.object.isRequired,
 };
 
 export default Dropdown;

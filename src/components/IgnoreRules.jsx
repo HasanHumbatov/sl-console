@@ -129,23 +129,22 @@ const IgnoreRules = () => {
   const closePopup = () => {
     setState((prevState) => ({
       ...prevState,
-      popup: { visible: false, email: '', x: 0, y: 0 },
+      popup: { ...prevState.popup, visible: false },
     }));
   };
 
   const handleClickOutside = useCallback(
     (event) => {
-      // Check if the click is outside both dropdown and popup
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target) &&
-        popupRef.current &&
-        !popupRef.current.contains(event.target)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setState((prevState) => ({
           ...prevState,
           isDropdownOpen: false,
-          popup: { visible: false, email: '', x: 0, y: 0 },
+        }));
+      }
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setState((prevState) => ({
+          ...prevState,
+          popup: { ...prevState.popup, visible: false },
         }));
       }
     },
@@ -168,6 +167,7 @@ const IgnoreRules = () => {
         searchInputRef={searchInputRef}
         handleKeyDown={handleKeyDown}
         handleAppSelect={handleAppSelect}
+        dropdownRef={dropdownRef}
       />
       {state.selectedAppName ? (
         state.ignoreRules.length > 0 ? (
