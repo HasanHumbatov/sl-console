@@ -10,6 +10,7 @@
 //   const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
 //   const [isLoadingApps, setIsLoadingApps] = useState(false);
 //   const [highlightedIndexApp, setHighlightedIndexApp] = useState(-1);
+//   const [responseData, setResponseData] = useState([]);
 //   const appDropdownRef = useRef(null);
 //   const appSearchInputRef = useRef(null);
 
@@ -33,6 +34,31 @@
 //         setIsLoadingApps(false);
 //       });
 //   }, []);
+
+//   // Fetch build data for selected app
+//   useEffect(() => {
+//     if (!selectedAppName) return;
+
+//     setIsLoadingApps(true); // Set loading state when fetching data for selected app
+
+//     axios
+//       .get(
+//         `https://plutotv.sealights.co/sl-api/v1/builds/apps/${selectedAppName}/filter?tag=released`,
+//         {
+//           headers: {
+//             Authorization: config.AUTH_TOKEN,
+//           },
+//         }
+//       )
+//       .then((response) => {
+//         setResponseData(response.data.data.list);
+//         setIsLoadingApps(false); // Hide loading icon after the response
+//       })
+//       .catch((error) => {
+//         console.error('Error fetching build data:', error);
+//         setIsLoadingApps(false);
+//       });
+//   }, [selectedAppName]);
 
 //   useEffect(() => {
 //     const handleClickOutside = (event) => {
@@ -88,9 +114,12 @@
 //                 setTimeout(() => appSearchInputRef.current.focus(), 0);
 //               }
 //             }}
-//             className='bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 text-left w-full'
+//             className='bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-3 rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 text-left w-full flex justify-between items-center'
 //           >
-//             {selectedAppName || 'Select service name'}
+//             <span>{selectedAppName || 'Select service name'}</span>
+//             {isLoadingApps && (
+//               <div className='loader w-4 h-4 border-t-2 border-white border-solid rounded-full animate-spin'></div>
+//             )}
 //           </button>
 //           {isAppDropdownOpen && (
 //             <div className='absolute bg-white border rounded-lg shadow-lg w-full mt-2 z-10'>
@@ -133,9 +162,44 @@
 //           )}
 //         </div>
 //       </div>
+
 //       {/* Display report data */}
 //       {!selectedAppName && (
 //         <div className='mt-4 text-gray-500'>Select service name . . .</div>
+//       )}
+
+//       {selectedAppName && responseData.length === 0 && !isLoadingApps && (
+//         <div className='mt-8 text-gray-500 text-center'>
+//           No data available for selected service name
+//         </div>
+//       )}
+
+//       {responseData.length > 0 && (
+//         <div className='mt-4'>
+//           <table className='min-w-full table-auto'>
+//             <thead className='bg-gray-200'>
+//               <tr>
+//                 <th className='px-4 py-2'>App Name</th>
+//                 <th className='px-4 py-2'>Branch Name</th>
+//                 <th className='px-4 py-2'>Build Name</th>
+//                 <th className='px-4 py-2'>Generated At</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {responseData.map((build, index) => (
+//                 <tr
+//                   key={build._id}
+//                   className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
+//                 >
+//                   <td className='px-4 py-2'>{build.appName}</td>
+//                   <td className='px-4 py-2'>{build.branchName}</td>
+//                   <td className='px-4 py-2'>{build.buildName}</td>
+//                   <td className='px-4 py-2'>{build.generated}</td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
 //       )}
 //     </div>
 //   );
@@ -155,7 +219,7 @@ const BaselineApplicationTags = () => {
   const [isAppDropdownOpen, setIsAppDropdownOpen] = useState(false);
   const [isLoadingApps, setIsLoadingApps] = useState(false);
   const [highlightedIndexApp, setHighlightedIndexApp] = useState(-1);
-  const [responseData, setResponseData] = useState([]);
+  const [responseData, setResponseData] = useState({});
   const appDropdownRef = useRef(null);
   const appSearchInputRef = useRef(null);
 
@@ -180,30 +244,52 @@ const BaselineApplicationTags = () => {
       });
   }, []);
 
-  // Fetch build data for selected app
+  // Fetch build data for all apps
   useEffect(() => {
-    if (!selectedAppName) return;
+    if (appNames.length === 0) return;
 
-    setIsLoadingApps(true); // Set loading state when fetching data for selected app
+    setIsLoadingApps(true);
+    const fetchData = async () => {
+      try {
+        const requests = appNames.map((appName) =>
+          axios
+            .get(
+              `https://plutotv.sealights.co/sl-api/v1/builds/apps/${appName}/filter?tag=released`,
+              {
+                headers: {
+                  Authorization: config.AUTH_TOKEN,
+                },
+              }
+            )
+            .then((response) => ({ appName, data: response.data.data.list }))
+            .catch((error) => {
+              console.error(`Error fetching build data for ${appName}:`, error);
+              return { appName, data: [] }; // Handle error by returning empty data
+            })
+        );
 
-    axios
-      .get(
-        `https://plutotv.sealights.co/sl-api/v1/builds/apps/${selectedAppName}/filter?tag=released`,
-        {
-          headers: {
-            Authorization: config.AUTH_TOKEN,
-          },
-        }
-      )
-      .then((response) => {
-        setResponseData(response.data.data.list);
-        setIsLoadingApps(false); // Hide loading icon after the response
-      })
-      .catch((error) => {
-        console.error('Error fetching build data:', error);
-        setIsLoadingApps(false);
-      });
-  }, [selectedAppName]);
+        const results = await Promise.all(requests);
+
+        // Combine results into the responseData state
+        const updatedData = {};
+        results.forEach(({ appName, data }) => {
+          updatedData[appName] = data;
+        });
+        setResponseData(updatedData);
+      } catch (error) {
+        console.error('Error in fetching data:', error);
+      } finally {
+        setIsLoadingApps(false); // Stop the spinner
+      }
+    };
+
+    fetchData();
+  }, [appNames]);
+
+  // Filter responseData based on selectedAppName
+  const filteredData = selectedAppName
+    ? { [selectedAppName]: responseData[selectedAppName] || [] }
+    : responseData;
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -284,68 +370,60 @@ const BaselineApplicationTags = () => {
                 className='w-full px-4 py-2 border-b focus:outline-none'
                 ref={appSearchInputRef}
               />
-              {isLoadingApps ? (
-                <div className='flex justify-center py-2'>
-                  <div className='loader'></div>
-                </div>
-              ) : (
-                <ul className='max-h-60 overflow-y-auto'>
-                  {filteredAppNames.map((appName, index) => (
-                    <li
-                      key={index}
-                      onClick={() => handleAppSelect(appName)}
-                      className={`px-4 py-2 cursor-pointer hover:bg-blue-100 ${
-                        index === highlightedIndexApp ? 'bg-blue-200' : ''
-                      }`}
-                    >
-                      {appName}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              <ul className='max-h-60 overflow-y-auto'>
+                {filteredAppNames.map((appName, index) => (
+                  <li
+                    key={index}
+                    onClick={() => handleAppSelect(appName)}
+                    className={`px-4 py-2 cursor-pointer hover:bg-blue-100 ${
+                      index === highlightedIndexApp ? 'bg-blue-200' : ''
+                    }`}
+                  >
+                    {appName}
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </div>
       </div>
 
-      {/* Display report data */}
-      {!selectedAppName && (
-        <div className='mt-4 text-gray-500'>Select service name . . .</div>
-      )}
-
-      {selectedAppName && responseData.length === 0 && !isLoadingApps && (
-        <div className='mt-8 text-gray-500 text-center'>
-          No data available for selected service name
-        </div>
-      )}
-
-      {responseData.length > 0 && (
-        <div className='mt-4'>
-          <table className='min-w-full table-auto'>
-            <thead className='bg-gray-200'>
-              <tr>
-                <th className='px-4 py-2'>App Name</th>
-                <th className='px-4 py-2'>Branch Name</th>
-                <th className='px-4 py-2'>Build Name</th>
-                <th className='px-4 py-2'>Generated At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {responseData.map((build, index) => (
-                <tr
-                  key={build._id}
-                  className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}
-                >
-                  <td className='px-4 py-2'>{build.appName}</td>
+      {/* Display table */}
+      <div className='mt-4'>
+        {isLoadingApps && <div className='text-center'>Loading...</div>}
+        <table className='min-w-full table-auto'>
+          <thead className='bg-gray-200'>
+            <tr>
+              <th className='px-4 py-2'>App Name</th>
+              <th className='px-4 py-2'>Branch Name</th>
+              <th className='px-4 py-2'>Build Name</th>
+              <th className='px-4 py-2'>Generated At</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(filteredData).map(([appName, builds]) => {
+              if (builds.length === 0) {
+                return (
+                  <tr key={appName}>
+                    <td className='px-4 py-2'>{appName}</td>
+                    <td className='px-4 py-2 text-red-500'>N/A</td>
+                    <td className='px-4 py-2 text-red-500'>N/A</td>
+                    <td className='px-4 py-2 text-red-500'>N/A</td>
+                  </tr>
+                );
+              }
+              return builds.map((build, index) => (
+                <tr key={`${appName}-${index}`}>
+                  <td className='px-4 py-2'>{appName}</td>
                   <td className='px-4 py-2'>{build.branchName}</td>
                   <td className='px-4 py-2'>{build.buildName}</td>
                   <td className='px-4 py-2'>{build.generated}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              ));
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

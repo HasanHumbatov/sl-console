@@ -311,7 +311,7 @@ const TGAreport = () => {
           No data available for this service.
         </div>
       )}
-      {reportData && reportData.list.length > 0 && (
+      {/* {reportData && reportData.list.length > 0 && (
         <div className='mt-4'>
           <h2 className='text-xl font-bold mb-2'>Report Data</h2>
           {reportData.list.map((report, index) => (
@@ -524,6 +524,256 @@ const TGAreport = () => {
                             Uncovered Methods:
                           </span>{' '}
                           <span className='font-semibold'>
+                            {stage.modifiedCodeCoverage.uncoveredMethods}
+                          </span>
+                        </p>
+                        <p className='ml-4'>
+                          <span className='font-medium'>Covered Methods:</span>{' '}
+                          <span className='font-semibold'>
+                            {stage.modifiedCodeCoverage.coveredMethods}
+                          </span>
+                        </p>
+                        <p className='ml-4'>
+                          <span className='font-medium'>Coverage:</span>{' '}
+                          <span className='font-semibold'>
+                            {stage.modifiedCodeCoverage.coverage}%
+                          </span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Collapse>
+            </div>
+          ))}
+        </div>
+      )} */}
+      {reportData && reportData.list.length > 0 && (
+        <div className='mt-4'>
+          <h2 className='text-xl font-bold mb-2'>Report Data</h2>
+          {reportData.list.map((report, index) => (
+            <div key={index} className='mb-4 border rounded-lg shadow'>
+              <button
+                onClick={() => toggleAccordion(index)}
+                className='w-full text-left px-4 py-2 bg-gray-200 hover:bg-gray-300 focus:outline-none'
+              >
+                Report: {formatDateRange(report.reportId)}
+              </button>
+              <Collapse isOpened={activeIndex === index}>
+                <div className='p-4'>
+                  <div className='grid grid-cols-2 gap-4'>
+                    <div>
+                      <h3 className='text-lg font-semibold text-blue-600'>
+                        Report ID: {report.reportId}
+                      </h3>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Status:</span>{' '}
+                        <span className='font-semibold'>{report.status}</span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Template ID:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.templateId}
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>App Name:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.metadata.appName}
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Branch Name:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.metadata.branchName}
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Report Source:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.metadata.reportSource}
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Has Build In Range:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.metadata.hasBuildInRange ? 'Yes' : 'No'}
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Code Labels:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.metadata.codeLabels.join(', ') || 'None'}
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Range Dates:</span>{' '}
+                        <span className='font-semibold'>
+                          {new Date(
+                            report.metadata.range.dates.from
+                          ).toLocaleDateString()}{' '}
+                          to{' '}
+                          {new Date(
+                            report.metadata.range.dates.to
+                          ).toLocaleDateString()}
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Range Builds:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.metadata.range.builds.from} to{' '}
+                          {report.metadata.range.builds.to}
+                        </span>
+                      </p>
+                    </div>
+                    <div>
+                      <h4 className='font-semibold mt-2 text-blue-600'>
+                        Coverage:
+                      </h4>
+                      <h5 className='font-medium text-blue-500'>
+                        Overall Coverage:
+                      </h5>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Total Methods:</span>{' '}
+                        <span className='font-semibold'>
+                          {
+                            report.coverage.entireBuild.overallCoverage
+                              .totalMethods
+                          }
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Uncovered Methods:</span>{' '}
+                        <span className='font-semibold'>
+                          {
+                            report.coverage.entireBuild.overallCoverage
+                              .uncoveredMethods
+                          }
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Covered Methods:</span>{' '}
+                        <span className='font-semibold'>
+                          {
+                            report.coverage.entireBuild.overallCoverage
+                              .coveredMethods
+                          }
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Coverage:</span>{' '}
+                        <span className='font-semibold'>
+                          {report.coverage.entireBuild.overallCoverage.coverage}
+                          %
+                        </span>
+                      </p>
+                      <h5 className='font-medium text-blue-500'>
+                        Modified Code Coverage:
+                      </h5>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Total Methods:</span>{' '}
+                        <span className='font-semibold'>
+                          {
+                            report.coverage.entireBuild.modifiedCodeCoverage
+                              .totalMethods
+                          }
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Uncovered Methods:</span>{' '}
+                        <span
+                          className={`font-semibold ${
+                            report.coverage.entireBuild.modifiedCodeCoverage
+                              .uncoveredMethods > 0
+                              ? 'text-white bg-red-600 py-1 px-2 rounded'
+                              : ''
+                          }`}
+                        >
+                          {
+                            report.coverage.entireBuild.modifiedCodeCoverage
+                              .uncoveredMethods
+                          }
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Covered Methods:</span>{' '}
+                        <span className='font-semibold'>
+                          {
+                            report.coverage.entireBuild.modifiedCodeCoverage
+                              .coveredMethods
+                          }
+                        </span>
+                      </p>
+                      <p className='ml-4'>
+                        <span className='font-medium'>Coverage:</span>{' '}
+                        <span className='font-semibold'>
+                          {
+                            report.coverage.entireBuild.modifiedCodeCoverage
+                              .coverage
+                          }
+                          %
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4'>
+                    {report.coverage.testStages.map((stage, stageIndex) => (
+                      <div
+                        key={stageIndex}
+                        className='p-4 bg-gray-100 rounded-lg'
+                      >
+                        <h5 className='font-medium text-blue-600'>
+                          {stage.name}
+                        </h5>
+                        <h6 className='font-medium text-blue-500'>
+                          Overall Coverage:
+                        </h6>
+                        <p className='ml-4'>
+                          <span className='font-medium'>Total Methods:</span>{' '}
+                          <span className='font-semibold'>
+                            {stage.overallCoverage.totalMethods}
+                          </span>
+                        </p>
+                        <p className='ml-4'>
+                          <span className='font-medium'>
+                            Uncovered Methods:
+                          </span>{' '}
+                          <span className='font-semibold'>
+                            {stage.overallCoverage.uncoveredMethods}
+                          </span>
+                        </p>
+                        <p className='ml-4'>
+                          <span className='font-medium'>Covered Methods:</span>{' '}
+                          <span className='font-semibold'>
+                            {stage.overallCoverage.coveredMethods}
+                          </span>
+                        </p>
+                        <p className='ml-4'>
+                          <span className='font-medium'>Coverage:</span>{' '}
+                          <span className='font-semibold'>
+                            {stage.overallCoverage.coverage}%
+                          </span>
+                        </p>
+                        <h6 className='font-medium text-blue-500'>
+                          Modified Code Coverage:
+                        </h6>
+                        <p className='ml-4'>
+                          <span className='font-medium'>Total Methods:</span>{' '}
+                          <span className='font-semibold'>
+                            {stage.modifiedCodeCoverage.totalMethods}
+                          </span>
+                        </p>
+                        <p className='ml-4'>
+                          <span className='font-medium'>
+                            Uncovered Methods:
+                          </span>{' '}
+                          <span
+                            className={`font-semibold ${
+                              stage.modifiedCodeCoverage.uncoveredMethods > 0
+                                ? 'text-white bg-red-600 py-1 px-2 rounded'
+                                : ''
+                            }`}
+                          >
                             {stage.modifiedCodeCoverage.uncoveredMethods}
                           </span>
                         </p>
